@@ -1,0 +1,82 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    Review Articles
+{% endblock %}
+
+
+{% block content %}
+
+    <h2>
+        Articles Awaiting Approval
+    </h2>
+
+
+    {% for article in articles %}
+
+        <article class="article-card">
+
+            <h3>
+                {{ article.title }}
+            </h3>
+
+
+            {% if article.author %}
+
+                <p class="article-info">
+
+                    Journalist:
+                    {{ article.author.username }}
+
+                </p>
+
+            {% endif %}
+
+
+            {% if article.publisher %}
+
+                <p class="article-info">
+
+                    Publisher:
+                    {{ article.publisher.name }}
+
+                </p>
+
+            {% endif %}
+
+
+            <p>
+                {{ article.content }}
+            </p>
+
+
+            <form
+                method="post"
+                action="{% url 'approve_article' article.id %}"
+            >
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="approve-button"
+                >
+                    Approve Article
+                </button>
+
+            </form>
+
+        </article>
+
+    {% empty %}
+
+        <div class="empty-message">
+
+            There are no articles awaiting approval.
+
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

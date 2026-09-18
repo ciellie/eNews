@@ -1,0 +1,65 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    eNews - Home
+{% endblock %}
+
+
+{% block content %}
+
+    <h2>
+        Latest Articles
+    </h2>
+
+
+    {% for article in articles %}
+
+        <article class="article-card">
+
+            <h3>
+                {{ article.title }}
+            </h3>
+
+
+            {% if article.author %}
+
+                <p class="article-info">
+                    By {{ article.author.username }}
+                </p>
+
+            {% endif %}
+
+
+            {% if article.publisher %}
+
+                <p class="article-info">
+                    Publisher:
+                    {{ article.publisher.name }}
+                </p>
+
+            {% endif %}
+
+
+            <p class="article-info">
+                {{ article.created_at|date:"d F Y H:i" }}
+            </p>
+
+
+            <p>
+                {{ article.content }}
+            </p>
+
+        </article>
+
+    {% empty %}
+
+        <div class="empty-message">
+
+            No approved articles are available.
+
+        </div>
+
+    {% endfor %}
+
+{% endblock %}

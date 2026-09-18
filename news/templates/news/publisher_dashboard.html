@@ -1,0 +1,77 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    Publisher
+{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    {{ publisher.name }}
+</h2>
+
+
+<p>
+    {{ publisher.description }}
+</p>
+
+
+<p>
+    <strong>
+        Owner:
+    </strong>
+
+    {{ publisher.owner.username }}
+</p>
+
+
+<p>
+    <a
+        href="{% url 'publisher_employees' %}"
+        class="primary-button"
+    >
+        Manage Employees
+    </a>
+</p>
+
+
+<h3>
+    Journalists
+</h3>
+
+{% for journalist in publisher.journalists.all %}
+
+    <p>
+        {{ journalist.username }}
+    </p>
+
+{% empty %}
+
+    <p>
+        No Journalists have been added.
+    </p>
+
+{% endfor %}
+
+
+<h3>
+    Editors
+</h3>
+
+{% for editor in publisher.editors.all %}
+
+    <p>
+        {{ editor.username }}
+    </p>
+
+{% empty %}
+
+    <p>
+        No Editors have been added.
+    </p>
+
+{% endfor %}
+
+{% endblock %}

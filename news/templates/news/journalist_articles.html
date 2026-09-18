@@ -1,0 +1,104 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    My Articles
+{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    My Articles
+</h2>
+
+
+<p>
+    <a
+        href="{% url 'article_create' %}"
+        class="primary-button"
+    >
+        Create New Article
+    </a>
+</p>
+
+
+{% for article in articles %}
+
+    <article class="article-card">
+
+        <h3>
+            {{ article.title }}
+        </h3>
+
+
+        {% if article.publisher %}
+
+            <p class="article-info">
+
+                Publisher:
+                {{ article.publisher.name }}
+
+            </p>
+
+        {% else %}
+
+            <p class="article-info">
+                Independent Article
+            </p>
+
+        {% endif %}
+
+
+        <p>
+
+            Status:
+
+            {% if article.approved %}
+
+                <strong>
+                    Approved
+                </strong>
+
+            {% else %}
+
+                <strong>
+                    Waiting for approval
+                </strong>
+
+            {% endif %}
+
+        </p>
+
+
+        <p>
+            {{ article.content|truncatewords:30 }}
+        </p>
+
+
+        <a
+            href="{% url 'article_edit' article.id %}"
+        >
+            Edit
+        </a>
+
+        &nbsp;
+
+        <a
+            href="{% url 'article_delete' article.id %}"
+        >
+            Delete
+        </a>
+
+    </article>
+
+
+{% empty %}
+
+    <p>
+        You have not created any articles yet.
+    </p>
+
+{% endfor %}
+
+{% endblock %}

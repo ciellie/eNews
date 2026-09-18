@@ -1,0 +1,131 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    Newsletters
+{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    Newsletters
+</h2>
+
+
+{% if user.role == "JOURNALIST" %}
+
+    <p>
+        <a
+            href="{% url 'newsletter_create' %}"
+            class="primary-button"
+        >
+            Create Newsletter
+        </a>
+    </p>
+
+{% endif %}
+
+
+{% for newsletter in newsletters %}
+
+    <article class="article-card">
+
+        <h3>
+            {{ newsletter.title }}
+        </h3>
+
+
+        <p class="article-info">
+            Created by:
+            {{ newsletter.author.username }}
+        </p>
+
+
+        <p class="article-info">
+            {{ newsletter.created_at|date:"d F Y H:i" }}
+        </p>
+
+
+        <p>
+            {{ newsletter.description }}
+        </p>
+
+
+        <h4>
+            Articles
+        </h4>
+
+        <ul>
+
+            {% for article in newsletter.articles.all %}
+
+                <li>
+                    {{ article.title }}
+                </li>
+
+            {% empty %}
+
+                <li>
+                    No articles in this newsletter.
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+
+        {% if user.role == "EDITOR" %}
+
+            <p>
+                <a
+                    href="{% url 'newsletter_edit' newsletter.id %}"
+                >
+                    Edit
+                </a>
+
+                &nbsp;
+
+                <a
+                    href="{% url 'newsletter_delete' newsletter.id %}"
+                >
+                    Delete
+                </a>
+            </p>
+
+        {% elif user.role == "JOURNALIST" %}
+
+            {% if newsletter.author == user %}
+
+                <p>
+                    <a
+                        href="{% url 'newsletter_edit' newsletter.id %}"
+                    >
+                        Edit
+                    </a>
+
+                    &nbsp;
+
+                    <a
+                        href="{% url 'newsletter_delete' newsletter.id %}"
+                    >
+                        Delete
+                    </a>
+                </p>
+
+            {% endif %}
+
+        {% endif %}
+
+    </article>
+
+
+{% empty %}
+
+    <p>
+        No newsletters are available.
+    </p>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    My Subscriptions
+{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    My Subscriptions
+</h2>
+
+
+<h3>
+    Publishers
+</h3>
+
+{% for publisher in publishers %}
+
+    <div class="article-card">
+
+        <strong>
+            {{ publisher.name }}
+        </strong>
+
+        <form
+            method="post"
+            action="{% url 'toggle_publisher_subscription' publisher.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+
+                {% if publisher in user.subscriptions_publishers.all %}
+
+                    Unsubscribe
+
+                {% else %}
+
+                    Subscribe
+
+                {% endif %}
+
+            </button>
+
+        </form>
+
+    </div>
+
+{% empty %}
+
+    <p>
+        No publishers are available.
+    </p>
+
+{% endfor %}
+
+
+<h3>
+    Journalists
+</h3>
+
+{% for journalist in journalists %}
+
+    <div class="article-card">
+
+        <strong>
+            {{ journalist.username }}
+        </strong>
+
+        <form
+            method="post"
+            action="{% url 'toggle_journalist_subscription' journalist.id %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="primary-button"
+            >
+
+                {% if journalist in user.subscriptions_journalists.all %}
+
+                    Unsubscribe
+
+                {% else %}
+
+                    Subscribe
+
+                {% endif %}
+
+            </button>
+
+        </form>
+
+    </div>
+
+{% empty %}
+
+    <p>
+        No journalists are available.
+    </p>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    Manage Employees
+{% endblock %}
+
+
+{% block content %}
+
+<h2>
+    Manage Employees
+</h2>
+
+
+<h3>
+    {{ publisher.name }}
+</h3>
+
+
+<form method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button
+        type="submit"
+        class="primary-button"
+    >
+        Add Employee
+    </button>
+
+</form>
+
+
+<hr>
+
+
+<h3>
+    Journalists
+</h3>
+
+{% for journalist in publisher.journalists.all %}
+
+    <div class="article-card">
+
+        <strong>
+            {{ journalist.username }}
+        </strong>
+
+
+        <form
+            method="post"
+            action="{% url 'remove_publisher_employee' journalist.id 'journalist' %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="nav-button"
+            >
+                Remove
+            </button>
+
+        </form>
+
+    </div>
+
+{% empty %}
+
+    <p>
+        No Journalists assigned.
+    </p>
+
+{% endfor %}
+
+
+<h3>
+    Editors
+</h3>
+
+{% for editor in publisher.editors.all %}
+
+    <div class="article-card">
+
+        <strong>
+            {{ editor.username }}
+        </strong>
+
+
+        <form
+            method="post"
+            action="{% url 'remove_publisher_employee' editor.id 'editor' %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="nav-button"
+            >
+                Remove
+            </button>
+
+        </form>
+
+    </div>
+
+{% empty %}
+
+    <p>
+        No Editors assigned.
+    </p>
+
+{% endfor %}
+
+
+<p>
+    <a href="{% url 'publisher_dashboard' %}">
+        Back to Publisher
+    </a>
+</p>
+
+{% endblock %}

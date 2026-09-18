@@ -1,0 +1,48 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    Delete Article
+{% endblock %}
+
+
+{% block content %}
+
+<div class="login-box">
+
+    <h2>
+        Delete Article
+    </h2>
+
+    <p>
+        Are you sure you want to delete:
+    </p>
+
+    <h3>
+        {{ article.title }}
+    </h3>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        <button
+            type="submit"
+            class="primary-button"
+        >
+            Yes, Delete Article
+        </button>
+
+    </form>
+
+
+    <p>
+        <a href="{% url 'journalist_articles' %}">
+            Cancel
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

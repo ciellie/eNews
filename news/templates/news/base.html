@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>
+        {% block title %}
+            eNews
+        {% endblock %}
+    </title>
+
+    {% load static %}
+
+    <link
+        rel="stylesheet"
+        href="{% static 'news/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+    <header>
+
+        <div class="container">
+
+            <h1 class="logo">
+                eNews
+            </h1>
+
+
+            <nav>
+
+                <a href="{% url 'home' %}">
+                    Home
+                </a>
+
+
+                {% if user.is_authenticated %}
+
+                    <!-- All logged-in users can view newsletters -->
+
+                    <a href="{% url 'newsletter_list' %}">
+                        Newsletters
+                    </a>
+
+                   {% if user.role == "PUBLISHER" %}
+
+                    <a href="{% url 'publisher_dashboard' %}">
+                       Publisher Profile
+                    </a>
+
+                    <a href="{% url 'publisher_employees' %}">
+                       Employees
+                    </a>
+
+                   {% endif %}
+                    <!-- Journalist menu -->
+
+                    {% if user.role == "JOURNALIST" %}
+
+                        <a href="{% url 'journalist_articles' %}">
+                            My Articles
+                        </a>
+
+                        <a href="{% url 'article_create' %}">
+                            New Article
+                        </a>
+
+                        <a href="{% url 'newsletter_create' %}">
+                            New Newsletter
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Editor menu -->
+
+                    {% if user.role == "EDITOR" %}
+
+                        <a href="{% url 'editor_review' %}">
+                            Review Articles
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Reader menu -->
+
+                    {% if user.role == "READER" %}
+
+                        <a href="{% url 'subscriptions' %}">
+                            My Subscriptions
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Django Admin -->
+
+                    {% if user.is_staff %}
+
+                        <a href="{% url 'admin:index' %}">
+                            Admin
+                        </a>
+
+                    {% endif %}
+
+
+                    <!-- Logged-in username -->
+
+                    <span class="username">
+                        {{ user.username }}
+                    </span>
+
+
+                    <!-- Logout -->
+
+                    <form
+                        method="post"
+                        action="{% url 'logout' %}"
+                        class="logout-form"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="nav-button"
+                        >
+                            Logout
+                        </button>
+
+                    </form>
+
+
+                {% else %}
+
+                    <a href="{% url 'login' %}">
+                        Login
+                    </a>
+
+                    <a href="{% url 'register' %}">
+                        Register
+                    </a>
+
+                {% endif %}
+
+            </nav>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="message">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            eNews &copy; 2026
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="login-box">
+
+    <h2>
+        {{ page_title }}
+    </h2>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+
+        <button
+            type="submit"
+            class="primary-button"
+        >
+            Save Article
+        </button>
+
+    </form>
+
+
+    <p>
+        <a href="{% url 'journalist_articles' %}">
+            Back to My Articles
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

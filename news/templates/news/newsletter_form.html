@@ -1,0 +1,56 @@
+{% extends "news/base.html" %}
+
+
+{% block title %}
+    {{ page_title }}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="login-box">
+
+    <h2>
+        {{ page_title }}
+    </h2>
+
+
+    {% if user.role == "JOURNALIST" %}
+
+        <p>
+            <strong>
+                Author:
+            </strong>
+
+            {{ user.username }}
+        </p>
+
+    {% endif %}
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+
+        <button
+            type="submit"
+            class="primary-button"
+        >
+            Save Newsletter
+        </button>
+
+    </form>
+
+
+    <p>
+        <a href="{% url 'newsletter_list' %}">
+            Back to Newsletters
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}
