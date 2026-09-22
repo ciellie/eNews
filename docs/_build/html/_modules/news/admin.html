@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>news.admin &mdash; eNews 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            eNews
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">news</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">eNews</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">news.admin</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for news.admin</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Django admin configuration for the news application.</span>
+
+<span class="sd">This module registers the application's custom user, article,</span>
+<span class="sd">publisher, and newsletter models with the Django administration site.</span>
+
+<span class="sd">The admin classes configure how each model is displayed, searched,</span>
+<span class="sd">filtered, and edited in the Django admin interface.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib</span><span class="w"> </span><span class="kn">import</span> <span class="n">admin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">django.contrib.auth.admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">UserAdmin</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Article</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Publisher</span>
+
+
+<div class="viewcode-block" id="CustomUserAdmin">
+<a class="viewcode-back" href="../../news.html#news.admin.CustomUserAdmin">[docs]</a>
+<span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">CustomUser</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomUserAdmin</span><span class="p">(</span><span class="n">UserAdmin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configure the Django admin interface for custom users.</span>
+
+<span class="sd">    This class extends Django's standard</span>
+<span class="sd">    :class:`django.contrib.auth.admin.UserAdmin` class to include</span>
+<span class="sd">    fields required by the news application.</span>
+
+<span class="sd">    The additional fields allow an administrator to view the user's</span>
+<span class="sd">    role and Reader subscription information.</span>
+
+<span class="sd">    The admin list displays the username, email address, application</span>
+<span class="sd">    role, and staff status.</span>
+
+<span class="sd">    :ivar fieldsets:</span>
+<span class="sd">        Extends the standard Django user fieldsets with the news</span>
+<span class="sd">        application role and subscription fields.</span>
+<span class="sd">    :vartype fieldsets: tuple</span>
+
+<span class="sd">    :ivar add_fieldsets:</span>
+<span class="sd">        Extends the standard user creation form with the application</span>
+<span class="sd">        role and email address.</span>
+<span class="sd">    :vartype add_fieldsets: tuple</span>
+
+<span class="sd">    :ivar list_display:</span>
+<span class="sd">        Fields displayed in the Django admin user list.</span>
+<span class="sd">    :vartype list_display: tuple</span>
+<span class="sd">    """</span>
+
+    <span class="n">fieldsets</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">fieldsets</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">"News application"</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">"fields"</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s2">"role"</span><span class="p">,</span>
+                    <span class="s2">"subscriptions_publishers"</span><span class="p">,</span>
+                    <span class="s2">"subscriptions_journalists"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">add_fieldsets</span> <span class="o">=</span> <span class="n">UserAdmin</span><span class="o">.</span><span class="n">add_fieldsets</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="s2">"News application"</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">"fields"</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="s2">"role"</span><span class="p">,</span>
+                    <span class="s2">"email"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"username"</span><span class="p">,</span>
+        <span class="s2">"email"</span><span class="p">,</span>
+        <span class="s2">"role"</span><span class="p">,</span>
+        <span class="s2">"is_staff"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ArticleAdmin">
+<a class="viewcode-back" href="../../news.html#news.admin.ArticleAdmin">[docs]</a>
+<span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Article</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArticleAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configure the Django admin interface for articles.</span>
+
+<span class="sd">    This admin configuration determines which Article fields are</span>
+<span class="sd">    displayed in the article list and provides filtering and search</span>
+<span class="sd">    functionality.</span>
+
+<span class="sd">    Articles can be filtered according to approval status, Publisher,</span>
+<span class="sd">    and creation date.</span>
+
+<span class="sd">    Administrators can search article records using the article title</span>
+<span class="sd">    or article content.</span>
+
+<span class="sd">    :ivar list_display:</span>
+<span class="sd">        Article fields displayed in the Django admin list view.</span>
+<span class="sd">    :vartype list_display: tuple</span>
+
+<span class="sd">    :ivar list_filter:</span>
+<span class="sd">        Article fields available as filters in the admin interface.</span>
+<span class="sd">    :vartype list_filter: tuple</span>
+
+<span class="sd">    :ivar search_fields:</span>
+<span class="sd">        Article fields searched when using the Django admin search</span>
+<span class="sd">        facility.</span>
+<span class="sd">    :vartype search_fields: tuple</span>
+<span class="sd">    """</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"title"</span><span class="p">,</span>
+        <span class="s2">"author"</span><span class="p">,</span>
+        <span class="s2">"publisher"</span><span class="p">,</span>
+        <span class="s2">"approved"</span><span class="p">,</span>
+        <span class="s2">"created_at"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">list_filter</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"approved"</span><span class="p">,</span>
+        <span class="s2">"publisher"</span><span class="p">,</span>
+        <span class="s2">"created_at"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"title"</span><span class="p">,</span>
+        <span class="s2">"content"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PublisherAdmin">
+<a class="viewcode-back" href="../../news.html#news.admin.PublisherAdmin">[docs]</a>
+<span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Publisher</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PublisherAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configure the Django admin interface for Publishers.</span>
+
+<span class="sd">    Publisher records are displayed by name and can be searched by</span>
+<span class="sd">    their Publisher name.</span>
+
+<span class="sd">    The normal application workflow allows Publisher accounts to</span>
+<span class="sd">    manage their employees through the frontend. The Django admin</span>
+<span class="sd">    interface is intended primarily for system maintenance.</span>
+
+<span class="sd">    :ivar list_display:</span>
+<span class="sd">        Publisher fields displayed in the Django admin list.</span>
+<span class="sd">    :vartype list_display: tuple</span>
+
+<span class="sd">    :ivar search_fields:</span>
+<span class="sd">        Publisher fields searched by the Django admin search facility.</span>
+<span class="sd">    :vartype search_fields: tuple</span>
+<span class="sd">    """</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"name"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"name"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="NewsletterAdmin">
+<a class="viewcode-back" href="../../news.html#news.admin.NewsletterAdmin">[docs]</a>
+<span class="nd">@admin</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">Newsletter</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewsletterAdmin</span><span class="p">(</span><span class="n">admin</span><span class="o">.</span><span class="n">ModelAdmin</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Configure the Django admin interface for newsletters.</span>
+
+<span class="sd">    The newsletter admin list displays the newsletter title, author,</span>
+<span class="sd">    and creation date.</span>
+
+<span class="sd">    Administrators can search newsletters using the title or</span>
+<span class="sd">    description.</span>
+
+<span class="sd">    :ivar list_display:</span>
+<span class="sd">        Newsletter fields displayed in the Django admin list view.</span>
+<span class="sd">    :vartype list_display: tuple</span>
+
+<span class="sd">    :ivar search_fields:</span>
+<span class="sd">        Newsletter fields used when searching from the Django admin</span>
+<span class="sd">        interface.</span>
+<span class="sd">    :vartype search_fields: tuple</span>
+<span class="sd">    """</span>
+
+    <span class="n">list_display</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"title"</span><span class="p">,</span>
+        <span class="s2">"author"</span><span class="p">,</span>
+        <span class="s2">"created_at"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">search_fields</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">"title"</span><span class="p">,</span>
+        <span class="s2">"description"</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Ciellie.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
