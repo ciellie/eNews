@@ -1,0 +1,44 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Temporary reviewer credentials
+REVIEWER_CREDENTIALS.txt
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django generated/static files
+staticfiles/
+*.log
+
+# Test / coverage files
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Sphinx generated documentation
+docs/_build/
+
+# IDE files
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local database files
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.bak
