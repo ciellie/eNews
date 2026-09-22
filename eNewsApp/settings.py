@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9k)fm^(9i-b==s$j9(q5vgl@q0vgaw63%jyc3)e8$5q9n2wn^y'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-development-key",
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (
+    os.getenv(
+        "DJANGO_DEBUG",
+        "True",
+    ).lower()
+    == "true"
+)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "DJANGO_ALLOWED_HOSTS",
+        "localhost,127.0.0.1",
+    ).split(",")
+    if host.strip()
+]
 
 
 # Application definition
@@ -44,6 +60,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,14 +94,27 @@ WSGI_APPLICATION = 'eNewsApp.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": (
-            "django.db.backends.mysql"
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv(
+            "DB_NAME",
+            "enewsapp",
         ),
-        "NAME": "enewsapp",
-        "USER": "root",
-        "PASSWORD": "kot@g3sh1lJvv123#",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "USER": os.getenv(
+            "DB_USER",
+            "root",
+        ),
+        "PASSWORD": os.getenv(
+            "DB_PASSWORD",
+            "",
+        ),
+        "HOST": os.getenv(
+            "DB_HOST",
+            "localhost",
+        ),
+        "PORT": os.getenv(
+            "DB_PORT",
+            "3306",
+        ),
         "OPTIONS": {
             "charset": "utf8mb4",
         },
@@ -126,7 +156,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+
+STATIC_ROOT = (
+    BASE_DIR
+    / "staticfiles"
+)
+
 
 
 # Email
@@ -157,11 +193,15 @@ REST_FRAMEWORK = {
         ),
     ],
 }
-APPROVED_ARTICLE_API_URL = (
-    "http://127.0.0.1:8000/api/approved/"
+APPROVED_ARTICLE_API_URL = os.getenv(
+    "APPROVED_ARTICLE_API_URL",
+    "http://127.0.0.1:8000/api/approved/",
 )
 
-INTERNAL_API_KEY = "enews-internal-api-key"
+INTERNAL_API_KEY = os.getenv(
+    "INTERNAL_API_KEY",
+    "enews-internal-api-key",
+)
 AUTH_USER_MODEL = "news.CustomUser"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"

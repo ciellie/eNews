@@ -1,0 +1,55 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-enewsapp}
+      MYSQL_USER: ${MYSQL_USER:-enewsuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-enews_dev_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-enews_root_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_NAME: ${MYSQL_DATABASE:-enewsapp}
+      DB_USER: ${MYSQL_USER:-enewsuser}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-enews_dev_password}
+      DB_HOST: db
+      DB_PORT: "3306"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-docker-assessment-secret-change-me}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-False}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-*}
+      DJANGO_CSRF_TRUSTED_ORIGINS: ${DJANGO_CSRF_TRUSTED_ORIGINS:-}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-enews-internal-api-key}
+      APPROVED_ARTICLE_API_URL: ${APPROVED_ARTICLE_API_URL:-http://127.0.0.1:8000/api/approved/}
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn eNewsApp.wsgi:application
+      --bind 0.0.0.0:8000
+      --workers 3
+      --timeout 120
+      "
+
+volumes:
+  mysql_data:
