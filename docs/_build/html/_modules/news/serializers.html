@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>news.serializers &mdash; eNews 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            eNews
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">news</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">eNews</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">news.serializers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for news.serializers</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Serializers for the news REST API.</span>
+
+<span class="sd">This module contains Django REST Framework serializers used to</span>
+<span class="sd">convert application model instances to and from JSON-compatible</span>
+<span class="sd">representations.</span>
+
+<span class="sd">The serializers support the following models:</span>
+
+<span class="sd">* :class:`news.models.CustomUser`</span>
+<span class="sd">* :class:`news.models.Publisher`</span>
+<span class="sd">* :class:`news.models.Article`</span>
+<span class="sd">* :class:`news.models.Newsletter`</span>
+
+<span class="sd">Validation is also performed for article approval and Publisher</span>
+<span class="sd">membership.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">rest_framework</span><span class="w"> </span><span class="kn">import</span> <span class="n">serializers</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Article</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomUser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Newsletter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Publisher</span>
+
+
+<div class="viewcode-block" id="UserSerializer">
+<a class="viewcode-back" href="../../news.html#news.api_views.UserSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UserSerializer</span><span class="p">(</span>
+    <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Serialize application users.</span>
+
+<span class="sd">    This serializer exposes basic user information, the application</span>
+<span class="sd">    role, and Reader subscriptions.</span>
+
+<span class="sd">    The user's ID and role are read-only through this serializer.</span>
+
+<span class="sd">    :ivar Meta:</span>
+<span class="sd">        Serializer metadata defining the model, exposed fields,</span>
+<span class="sd">        and read-only fields.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="UserSerializer.Meta">
+<a class="viewcode-back" href="../../news.html#news.api_views.UserSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Configure the user serializer."""</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">CustomUser</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"username"</span><span class="p">,</span>
+            <span class="s2">"email"</span><span class="p">,</span>
+            <span class="s2">"role"</span><span class="p">,</span>
+            <span class="s2">"subscriptions_publishers"</span><span class="p">,</span>
+            <span class="s2">"subscriptions_journalists"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"role"</span><span class="p">,</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PublisherSerializer">
+<a class="viewcode-back" href="../../news.html#news.api_views.PublisherSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PublisherSerializer</span><span class="p">(</span>
+    <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Serialize Publisher records.</span>
+
+<span class="sd">    This serializer exposes Publisher information as well as the</span>
+<span class="sd">    Editors and Journalists associated with the Publisher.</span>
+
+<span class="sd">    The Publisher ID and creation date are read-only.</span>
+
+<span class="sd">    :ivar Meta:</span>
+<span class="sd">        Serializer metadata defining the Publisher model and fields.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="PublisherSerializer.Meta">
+<a class="viewcode-back" href="../../news.html#news.api_views.PublisherSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Configure the Publisher serializer."""</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Publisher</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"name"</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">,</span>
+            <span class="s2">"editors"</span><span class="p">,</span>
+            <span class="s2">"journalists"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+        <span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ArticleSerializer">
+<a class="viewcode-back" href="../../news.html#news.api_views.ArticleSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArticleSerializer</span><span class="p">(</span>
+    <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Serialize news articles.</span>
+
+<span class="sd">    The serializer provides the normal Article model fields together</span>
+<span class="sd">    with convenient read-only representations of the author name and</span>
+<span class="sd">    Publisher name.</span>
+
+<span class="sd">    It also performs validation for:</span>
+
+<span class="sd">    * article approval</span>
+<span class="sd">    * Publisher membership</span>
+
+<span class="sd">    :ivar author_name:</span>
+<span class="sd">        Read-only username of the article author.</span>
+<span class="sd">    :vartype author_name:</span>
+<span class="sd">        rest_framework.serializers.CharField</span>
+
+<span class="sd">    :ivar publisher_name:</span>
+<span class="sd">        Read-only name of the Publisher associated with the article.</span>
+<span class="sd">    :vartype publisher_name:</span>
+<span class="sd">        rest_framework.serializers.CharField</span>
+<span class="sd">    """</span>
+
+    <span class="n">author_name</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">"author.username"</span><span class="p">,</span>
+        <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">publisher_name</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">"publisher.name"</span><span class="p">,</span>
+        <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="ArticleSerializer.Meta">
+<a class="viewcode-back" href="../../news.html#news.api_views.ArticleSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Configure the Article serializer."""</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Article</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">,</span>
+            <span class="s2">"content"</span><span class="p">,</span>
+            <span class="s2">"author"</span><span class="p">,</span>
+            <span class="s2">"author_name"</span><span class="p">,</span>
+            <span class="s2">"publisher"</span><span class="p">,</span>
+            <span class="s2">"publisher_name"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+            <span class="s2">"approved"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"author"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ArticleSerializer.validate_approved">
+<a class="viewcode-back" href="../../news.html#news.api_views.ArticleSerializer.validate_approved">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_approved</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">approved</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Validate changes to the article approval status.</span>
+
+<span class="sd">        The method checks whether the current authenticated user has</span>
+<span class="sd">        Editor privileges when an article changes from unapproved to</span>
+<span class="sd">        approved.</span>
+
+<span class="sd">        Superusers are also permitted to approve articles.</span>
+
+<span class="sd">        If the approval value is not changing from ``False`` to</span>
+<span class="sd">        ``True``, the value is returned without an Editor check.</span>
+
+<span class="sd">        :param bool approved:</span>
+<span class="sd">            The proposed approval value for the article.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            The validated approval value.</span>
+
+<span class="sd">        :rtype:</span>
+<span class="sd">            bool</span>
+
+<span class="sd">        :raises serializers.ValidationError:</span>
+<span class="sd">            If a non-Editor attempts to approve an article.</span>
+<span class="sd">        """</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">"request"</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">approved</span>
+
+        <span class="n">current_approved</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="p">:</span>
+            <span class="n">current_approved</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">approved</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Only check when changing from</span>
+        <span class="c1"># unapproved to approved.</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">approved</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">current_approved</span>
+        <span class="p">):</span>
+            <span class="n">is_editor</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span>
+                <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">role</span>
+                <span class="o">==</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">EDITOR</span>
+                <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">"Editor"</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_editor</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                    <span class="s2">"Only editors may approve "</span>
+                    <span class="s2">"articles."</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">approved</span></div>
+
+
+<div class="viewcode-block" id="ArticleSerializer.validate_publisher">
+<a class="viewcode-back" href="../../news.html#news.api_views.ArticleSerializer.validate_publisher">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_publisher</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">publisher</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Validate the selected Publisher.</span>
+
+<span class="sd">        Journalists may only assign an article to a Publisher for</span>
+<span class="sd">        which they are registered as a Journalist.</span>
+
+<span class="sd">        Editors and superusers are permitted to work with Publisher</span>
+<span class="sd">        articles without this Journalist membership check.</span>
+
+<span class="sd">        A ``None`` Publisher value is valid because an article may</span>
+<span class="sd">        instead be an independent Journalist article.</span>
+
+<span class="sd">        :param Publisher publisher:</span>
+<span class="sd">            The Publisher selected for the article.</span>
+
+<span class="sd">        :returns:</span>
+<span class="sd">            The validated Publisher instance, or ``None`` for an</span>
+<span class="sd">            independent Journalist article.</span>
+
+<span class="sd">        :rtype:</span>
+<span class="sd">            Publisher or None</span>
+
+<span class="sd">        :raises serializers.ValidationError:</span>
+<span class="sd">            If a Journalist attempts to use a Publisher that they</span>
+<span class="sd">            do not belong to.</span>
+<span class="sd">        """</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">"request"</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">publisher</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="ow">or</span> <span class="n">request</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">publisher</span>
+
+        <span class="c1"># Editors are allowed to update articles.</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span>
+            <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">role</span>
+            <span class="o">==</span> <span class="n">CustomUser</span><span class="o">.</span><span class="n">EDITOR</span>
+            <span class="ow">or</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">"Editor"</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">publisher</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">publisher</span><span class="o">.</span><span class="n">journalists</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+            <span class="n">pk</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">pk</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">serializers</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">(</span>
+                <span class="s2">"You are not a journalist "</span>
+                <span class="s2">"for this publisher."</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">publisher</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="NewsletterSerializer">
+<a class="viewcode-back" href="../../news.html#news.api_views.NewsletterSerializer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NewsletterSerializer</span><span class="p">(</span>
+    <span class="n">serializers</span><span class="o">.</span><span class="n">ModelSerializer</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Serialize newsletters.</span>
+
+<span class="sd">    The serializer exposes Newsletter details together with a</span>
+<span class="sd">    read-only representation of the author's username.</span>
+
+<span class="sd">    Articles associated with the Newsletter are represented through</span>
+<span class="sd">    the Newsletter model's many-to-many relationship.</span>
+
+<span class="sd">    :ivar author_name:</span>
+<span class="sd">        Read-only username of the Newsletter author.</span>
+<span class="sd">    :vartype author_name:</span>
+<span class="sd">        rest_framework.serializers.CharField</span>
+<span class="sd">    """</span>
+
+    <span class="n">author_name</span> <span class="o">=</span> <span class="n">serializers</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span>
+        <span class="n">source</span><span class="o">=</span><span class="s2">"author.username"</span><span class="p">,</span>
+        <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="NewsletterSerializer.Meta">
+<a class="viewcode-back" href="../../news.html#news.api_views.NewsletterSerializer.Meta">[docs]</a>
+    <span class="k">class</span><span class="w"> </span><span class="nc">Meta</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Configure the Newsletter serializer."""</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Newsletter</span>
+
+        <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+            <span class="s2">"author"</span><span class="p">,</span>
+            <span class="s2">"author_name"</span><span class="p">,</span>
+            <span class="s2">"articles"</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="n">read_only_fields</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">"id"</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">,</span>
+            <span class="s2">"author"</span><span class="p">,</span>
+        <span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Ciellie.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
